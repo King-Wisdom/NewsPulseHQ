@@ -1,0 +1,146 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}NewsPulseHQ{% endblock %}
+    </title>
+
+    <meta
+        name="description"
+        content="{% block meta_description %}NewsPulseHQ — intelligent news, global perspectives, and stories that matter.{% endblock %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'newspulsehqapp/css/style.css' %}"
+    >
+
+    {% block extra_head %}{% endblock %}
+
+</head>
+
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="site-header">
+
+        <div class="container header-inner">
+
+            <a
+                href="{% url 'home' %}"
+                class="brand"
+            >
+                NewsPulseHQ
+            </a>
+
+
+            <nav
+                class="main-navigation"
+                aria-label="Main navigation"
+            >
+
+                <!-- HOME BUTTON -->
+
+                <a
+                    href="{% url 'home' %}"
+                    class="home-button"
+                >
+                    Home
+                </a>
+
+
+                <!-- CATEGORY LINKS -->
+
+                {% for category in categories %}
+
+                    <a href="{{ category.get_absolute_url }}">
+                        {{ category.name }}
+                    </a>
+
+                {% endfor %}
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <!-- BREAKING / BRAND BAR -->
+
+    <div class="breaking-bar">
+
+        <div class="container breaking-inner">
+
+            <span class="breaking-label">
+                NewsPulseHQ
+            </span>
+
+            <span class="breaking-text">
+                Intelligent news. Global perspective. Stories that matter.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <div class="container">
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+        <div class="container footer-inner">
+
+            <div>
+                <strong>NewsPulseHQ</strong>
+            </div>
+
+            <p>
+                Intelligent news, global perspectives,
+                and stories that matter.
+            </p>
+
+            <p>
+                &copy; {% now "Y" %} NewsPulseHQ.
+                All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="{% static 'newspulsehqapp/js/main.js' %}"></script>
+
+  </body>
+
+</html>

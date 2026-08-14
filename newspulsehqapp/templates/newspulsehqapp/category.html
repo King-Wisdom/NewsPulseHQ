@@ -1,0 +1,123 @@
+{% extends "newspulsehqapp/base.html" %}
+
+{% block title %}
+{{ category.name }} News | NewsPulseHQ
+{% endblock %}
+
+{% block meta_description %}
+Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
+{% endblock %}
+
+{% block content %}
+
+<section class="category-page">
+
+    <header class="category-header">
+
+        <span class="eyebrow">
+            NewsPulseHQ
+        </span>
+
+        <h1>
+            {{ category.name }}
+        </h1>
+
+        <p>
+            Latest stories and perspectives from
+            {{ category.name }}.
+        </p>
+
+    </header>
+
+
+    {% if articles %}
+
+        <div class="article-grid">
+
+            {% for article in articles %}
+
+                <article class="article-card">
+
+                    {% if article.featured_image %}
+
+                        <a
+                            href="{{ article.get_absolute_url }}"
+                            class="card-image"
+                        >
+                            <img
+                                src="{{ article.featured_image.url }}"
+                                alt="{{ article.title }}"
+                            >
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            href="{{ article.get_absolute_url }}"
+                            class="card-image card-placeholder"
+                        >
+                            <span>
+                                {{ category.name }}
+                            </span>
+                        </a>
+
+                    {% endif %}
+
+
+                    <div class="card-content">
+
+                        <span class="card-category">
+                            {{ category.name }}
+                        </span>
+
+                        <h3>
+                            <a href="{{ article.get_absolute_url }}">
+                                {{ article.title }}
+                            </a>
+                        </h3>
+
+                        {% if article.excerpt %}
+                            <p>
+                                {{ article.excerpt }}
+                            </p>
+                        {% endif %}
+
+                        <div class="card-meta">
+
+                            {% if article.author %}
+                                <span>
+                                    {{ article.author }}
+                                </span>
+                            {% endif %}
+
+                            {% if article.published_at %}
+                                <span>
+                                    {{ article.published_at|date:"M j, Y" }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state small">
+
+            <p>
+                No published stories in this category yet.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

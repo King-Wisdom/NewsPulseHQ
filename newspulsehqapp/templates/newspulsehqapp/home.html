@@ -1,0 +1,334 @@
+{% extends "newspulsehqapp/base.html" %}
+{% load static %}
+
+{% block title %}
+NewsPulseHQ | Global News & Perspectives
+{% endblock %}
+
+{% block meta_description %}
+NewsPulseHQ delivers Nigerian and global news, politics, business,
+technology, culture, crypto, trading and stories that matter.
+{% endblock %}
+
+{% block content %}
+
+{% if featured_article %}
+
+<div class="hero-copy">
+
+    <span class="eyebrow">
+        {{ featured_article.category.name|default:"Featured" }}
+    </span>
+
+    <h1>
+        <a href="{% url 'article_detail' featured_article.slug %}">
+            {{ featured_article.title }}
+        </a>
+    </h1>
+
+    {% if featured_article.excerpt %}
+        <p class="hero-excerpt">
+            {{ featured_article.excerpt }}
+        </p>
+    {% endif %}
+
+    <div class="article-meta">
+
+        {% if featured_article.source_name %}
+            <span>
+                {{ featured_article.source_name }}
+            </span>
+        {% elif featured_article.author %}
+            <span>
+                By {{ featured_article.author }}
+            </span>
+        {% endif %}
+
+        {% if featured_article.published_at %}
+            <span>
+                {{ featured_article.published_at|date:"F j, Y" }}
+            </span>
+        {% endif %}
+
+    </div>
+
+    <a
+        href="{% url 'article_detail' featured_article.slug %}"
+        class="read-more"
+    >
+        Read Full Story →
+    </a>
+
+</div>
+
+
+<!-- FEATURED IMAGE -->
+
+<a
+    href="{% url 'article_detail' featured_article.slug %}"
+    class="hero-image"
+>
+
+    {% if featured_article.featured_image %}
+
+        <!-- MANUALLY UPLOADED IMAGE -->
+        <img
+            src="{{ featured_article.featured_image.url }}"
+            alt="{{ featured_article.title }}"
+        >
+
+    {% elif featured_article.image_url %}
+
+        <!-- NEWS API IMAGE -->
+        <img
+            src="{{ featured_article.image_url }}"
+            alt="{{ featured_article.title }}"
+        >
+
+    {% else %}
+
+        <!-- FALLBACK -->
+        <img
+            src="{% static 'newspulsehqapp/images/fallback-news.jpg' %}"
+            alt="NewsPulseHQ"
+        >
+
+    {% endif %}
+
+</a>
+
+
+{% else %}
+
+<div class="empty-state">
+
+    <span class="eyebrow">
+        NewsPulseHQ
+    </span>
+
+    <h1>
+        Intelligent news.<br>
+        Global perspective.
+    </h1>
+
+    <p>
+        Stories that matter, presented with clarity and context.
+    </p>
+
+</div>
+
+{% endif %}
+
+
+<!-- =========================
+     LATEST STORIES
+========================= -->
+
+<div class="section-heading">
+
+    <div>
+
+        <span class="eyebrow">
+            NewsPulseHQ
+        </span>
+
+        <h2>
+            Latest Stories
+        </h2>
+
+    </div>
+
+    <span class="section-line"></span>
+
+</div>
+
+
+{% if latest_articles %}
+
+<div class="article-grid">
+
+    {% for article in latest_articles %}
+
+    <article class="article-card">
+
+
+        <!-- ARTICLE IMAGE -->
+
+        <a
+            href="{% url 'article_detail' article.slug %}"
+            class="card-image"
+        >
+
+            {% if article.featured_image %}
+
+                <!-- MANUALLY UPLOADED IMAGE -->
+                <img
+                    src="{{ article.featured_image.url }}"
+                    alt="{{ article.title }}"
+                    loading="lazy"
+                >
+
+            {% elif article.image_url %}
+
+                <!-- NEWS API IMAGE -->
+                <img
+                    src="{{ article.image_url }}"
+                    alt="{{ article.title }}"
+                    loading="lazy"
+                >
+
+            {% else %}
+
+                <!-- FALLBACK -->
+                <img
+                    src="{% static 'newspulsehqapp/images/fallback-news.jpg' %}"
+                    alt="NewsPulseHQ"
+                    loading="lazy"
+                >
+
+            {% endif %}
+
+        </a>
+
+
+        <!-- ARTICLE CONTENT -->
+
+        <div class="card-content">
+
+            <span class="card-category">
+                {{ article.category.name|default:"News" }}
+            </span>
+
+
+            <h3>
+                <a href="{% url 'article_detail' article.slug %}">
+                    {{ article.title }}
+                </a>
+            </h3>
+
+
+            {% if article.excerpt %}
+
+                <p>
+                    {{ article.excerpt }}
+                </p>
+
+            {% endif %}
+
+
+            <div class="card-meta">
+
+                {% if article.source_name %}
+
+                    <span>
+                        {{ article.source_name }}
+                    </span>
+
+                {% elif article.author %}
+
+                    <span>
+                        {{ article.author }}
+                    </span>
+
+                {% endif %}
+
+
+                {% if article.published_at %}
+
+                    <span>
+                        {{ article.published_at|date:"M j, Y" }}
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state small">
+
+    <p>
+        No published stories yet.
+    </p>
+
+</div>
+
+{% endif %}
+
+
+<!-- =========================
+     NEWS BY CATEGORY
+========================= -->
+
+<div class="section-heading">
+
+    <div>
+
+        <span class="eyebrow">
+            Explore
+        </span>
+
+        <h2>
+            News by Category
+        </h2>
+
+    </div>
+
+    <span class="section-line"></span>
+
+</div>
+
+
+<div class="category-links">
+
+    {% for category in categories %}
+
+        <a
+            href="{{ category.get_absolute_url }}"
+            class="category-link"
+        >
+            {{ category.name }}
+        </a>
+
+    {% empty %}
+
+        <span>
+            Categories coming soon.
+        </span>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- =========================
+     BRAND STATEMENT
+========================= -->
+
+<div>
+
+    <span class="eyebrow">
+        The NewsPulseHQ Standard
+    </span>
+
+    <h2>
+        News with context.<br>
+        Perspective with purpose.
+    </h2>
+
+</div>
+
+<p>
+    We believe great journalism should inform,
+    challenge and inspire.
+</p>
+
+{% endblock %}
