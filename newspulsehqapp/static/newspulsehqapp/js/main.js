@@ -1,10 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     console.log("NewsPulseHQ loaded successfully.");
+
+    /*
+    =========================
+    LIKE BUTTON
+    =========================
+    */
 
     const likeButton = document.getElementById("like-button");
 
     if (likeButton) {
+
         likeButton.addEventListener("click", function (event) {
+
             event.preventDefault();
 
             if (likeButton.disabled) {
@@ -27,13 +36,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             })
             .then(function (response) {
+
                 if (!response.ok) {
                     throw new Error("Like request failed.");
                 }
 
                 return response.json();
+
             })
             .then(function (data) {
+
                 document.getElementById("like-icon").textContent =
                     data.liked ? "❤️" : "🤍";
 
@@ -47,22 +59,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     "liked",
                     data.liked
                 );
+
             })
             .catch(function (error) {
+
                 console.error("Like error:", error);
+
             })
             .finally(function () {
+
                 likeButton.disabled = false;
+
             });
+
         });
+
     }
 
 
+    /*
+    =========================
+    SHARE ARTICLE
+    =========================
+    */
+
     window.shareArticle = function () {
+
         const title = document.title;
         const url = window.location.href;
 
         if (navigator.share) {
+
             navigator.share({
                 title: title,
                 url: url
@@ -74,60 +101,145 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (navigator.clipboard) {
+
             navigator.clipboard.writeText(url)
                 .then(function () {
-                    alert("Article link copied to clipboard.");
+
+                    alert(
+                        "Article link copied to clipboard."
+                    );
+
                 })
                 .catch(function () {
+
                     fallbackCopy(url);
+
                 });
 
             return;
         }
 
         fallbackCopy(url);
+
     };
 
 
+    /*
+    =========================
+    FALLBACK COPY
+    =========================
+    */
+
     function fallbackCopy(text) {
-        const temporaryInput = document.createElement("input");
+
+        const temporaryInput =
+            document.createElement("input");
 
         temporaryInput.value = text;
 
-        document.body.appendChild(temporaryInput);
+        document.body.appendChild(
+            temporaryInput
+        );
 
         temporaryInput.select();
 
         document.execCommand("copy");
 
-        document.body.removeChild(temporaryInput);
+        document.body.removeChild(
+            temporaryInput
+        );
 
-        alert("Article link copied to clipboard.");
+        alert(
+            "Article link copied to clipboard."
+        );
+
     }
 
 
+    /*
+    =========================
+    CSRF COOKIE
+    =========================
+    */
+
     function getCookie(name) {
+
         let cookieValue = null;
 
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";");
+        if (
+            document.cookie &&
+            document.cookie !== ""
+        ) {
 
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
+            const cookies =
+                document.cookie.split(";");
+
+            for (
+                let i = 0;
+                i < cookies.length;
+                i++
+            ) {
+
+                const cookie =
+                    cookies[i].trim();
 
                 if (
-                    cookie.substring(0, name.length + 1) ===
-                    name + "="
+                    cookie.substring(
+                        0,
+                        name.length + 1
+                    ) === name + "="
                 ) {
-                    cookieValue = decodeURIComponent(
-                        cookie.substring(name.length + 1)
-                    );
+
+                    cookieValue =
+                        decodeURIComponent(
+                            cookie.substring(
+                                name.length + 1
+                            )
+                        );
 
                     break;
+
                 }
+
             }
+
         }
 
         return cookieValue;
+
     }
+
+
+    /*
+    =========================
+    BROKEN NEWS IMAGES
+    =========================
+    */
+
+    const fallbackImage =
+        "/static/newspulsehqapp/images/fallback-news.jpg";
+
+    document
+        .querySelectorAll("img")
+        .forEach(function (image) {
+
+            image.addEventListener(
+                "error",
+                function () {
+
+                    if (
+                        image.src.includes(
+                            "fallback-news.jpg"
+                        )
+                    ) {
+                        return;
+                    }
+
+                    image.src = fallbackImage;
+
+                }
+            );
+
+        });
+
 });

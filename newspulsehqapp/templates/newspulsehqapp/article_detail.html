@@ -12,256 +12,308 @@
 
 <div class="article-detail">
 
-    <header class="article-detail-header">
+```
+<header class="article-detail-header">
 
-        {% if article.category %}
-            <span class="eyebrow">
-                {{ article.category.name }}
+    {% if article.category %}
+        <span class="eyebrow">
+            {{ article.category.name }}
+        </span>
+    {% endif %}
+
+    <h1>
+        {{ article.title }}
+    </h1>
+
+    {% if article.excerpt %}
+        <p class="article-lead">
+            {{ article.excerpt }}
+        </p>
+    {% endif %}
+
+    <div class="article-detail-meta">
+
+        {% if article.author %}
+            <span>
+                By {{ article.author }}
             </span>
         {% endif %}
 
-        <h1>
-            {{ article.title }}
-        </h1>
-
-        {% if article.excerpt %}
-            <p class="article-lead">
-                {{ article.excerpt }}
-            </p>
+        {% if article.published_at %}
+            <span>
+                {{ article.published_at|date:"F j, Y" }}
+            </span>
         {% endif %}
 
-        <div class="article-detail-meta">
+    </div>
 
-            {% if article.author %}
-                <span>
-                    By {{ article.author }}
-                </span>
+</header>
+
+
+<!-- ARTICLE IMAGE -->
+
+{% if article.featured_image %}
+
+    <div class="article-detail-image">
+
+        <img
+            src="{{ article.featured_image.url }}"
+            alt="{{ article.title }}"
+        >
+
+    </div>
+
+{% elif article.image_url %}
+
+    <div class="article-detail-image">
+
+        <img
+            src="{{ article.image_url }}"
+            alt="{{ article.title }}"
+        >
+
+    </div>
+
+{% endif %}
+
+
+<!-- ARTICLE CONTENT -->
+
+<div class="article-body">
+
+    {{ article.content|linebreaks }}
+
+</div>
+
+
+<!-- ARTICLE ACTIONS -->
+
+<div class="article-actions">
+
+    <button
+        type="button"
+        id="like-button"
+        class="like-button {% if user_has_liked %}liked{% endif %}"
+        data-url="{% url 'like_article' article.slug %}"
+    >
+
+        <span id="like-icon">
+
+            {% if user_has_liked %}
+                ❤️
+            {% else %}
+                🤍
             {% endif %}
 
-            {% if article.published_at %}
-                <span>
-                    {{ article.published_at|date:"F j, Y" }}
-                </span>
+        </span>
+
+        <span id="like-text">
+
+            {% if user_has_liked %}
+                Liked
+            {% else %}
+                Like
             {% endif %}
 
-        </div>
+        </span>
 
-    </header>
+        <span id="like-count">
+            {{ like_count }}
+        </span>
+
+    </button>
 
 
-    {% if article.featured_image %}
+    <button
+        type="button"
+        class="share-button"
+        onclick="shareArticle()"
+    >
+        🔗 Share
+    </button>
 
-        <div class="article-detail-image">
+</div>
 
-            <img
-                src="{{ article.featured_image.url }}"
-                alt="{{ article.title }}"
+
+<!-- DJANGO MESSAGES -->
+
+{% if messages %}
+
+    <div class="article-messages">
+
+        {% for message in messages %}
+
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<!-- COMMENTS -->
+
+<section class="comments-section">
+
+    <div class="comments-heading">
+
+        <span class="eyebrow">
+            Join the conversation
+        </span>
+
+        <h2>
+            Comments
+            <span>
+                ({{ comment_count }})
+            </span>
+        </h2>
+
+        <p class="comments-intro">
+            Share your thoughts and join the conversation.
+        </p>
+
+    </div>
+
+
+    <!-- COMMENT DISCLAIMER -->
+
+    <div class="comment-disclaimer">
+
+        <strong>
+            Comment Disclaimer
+        </strong>
+
+        <p>
+            Comments and opinions expressed by users on
+            NewsPulseHQ are solely those of the individual
+            contributors. They do not necessarily reflect
+            the views or position of NewsPulseHQ.
+        </p>
+
+        <p>
+            NewsPulseHQ does not endorse or take responsibility
+            for opinions expressed in user comments.
+        </p>
+
+    </div>
+
+
+    <!-- COMMENT FORM -->
+
+    <h3 class="comment-form-title">
+        Post a Comment
+    </h3>
+
+    <form
+        method="post"
+        action="{% url 'add_comment' article.slug %}"
+        class="comment-form"
+    >
+
+        {% csrf_token %}
+
+        <div class="comment-form-row">
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Your name"
+                maxlength="100"
+                required
+            >
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Email (optional)"
             >
 
         </div>
 
-    {% endif %}
 
-
-    <div class="article-body">
-
-        {{ article.content|linebreaks }}
-
-    </div>
-
-
-    <!-- ARTICLE ACTIONS -->
-
-    <div class="article-actions">
-
-        <button
-            type="button"
-            id="like-button"
-            class="like-button {% if user_has_liked %}liked{% endif %}"
-            data-url="{% url 'like_article' article.slug %}"
-        >
-
-            <span id="like-icon">
-                {% if user_has_liked %}
-                    ❤️
-                {% else %}
-                    🤍
-                {% endif %}
-            </span>
-
-            <span id="like-text">
-                {% if user_has_liked %}
-                    Liked
-                {% else %}
-                    Like
-                {% endif %}
-            </span>
-
-            <span id="like-count">
-                {{ like_count }}
-            </span>
-
-        </button>
+        <textarea
+            name="content"
+            rows="6"
+            maxlength="5000"
+            placeholder="Write your comment..."
+            required
+        ></textarea>
 
 
         <button
-            type="button"
-            class="share-button"
-            onclick="shareArticle()"
+            type="submit"
+            class="comment-submit"
         >
-            🔗 Share
+            Post Comment
         </button>
 
-    </div>
+    </form>
 
 
-    <!-- DJANGO MESSAGES -->
+    <!-- EXISTING COMMENTS -->
 
-    {% if messages %}
+    {% if comments %}
 
-        <div class="article-messages">
+        <div class="comments-list">
 
-            {% for message in messages %}
+            {% for comment in comments %}
 
-                <div class="message {{ message.tags }}">
-                    {{ message }}
-                </div>
+                <article class="comment">
+
+                    <div class="comment-header">
+
+                        <strong>
+                            {{ comment.name }}
+                        </strong>
+
+                        <time>
+                            {{ comment.created_at|date:"M j, Y" }}
+                        </time>
+
+                    </div>
+
+
+                    <p>
+                        {{ comment.content|linebreaksbr }}
+                    </p>
+
+                </article>
 
             {% endfor %}
 
         </div>
 
-    {% endif %}
+    {% else %}
 
+        <div class="comments-empty">
 
-    <!-- COMMENTS -->
-
-    <section class="comments-section">
-
-        <div class="comments-heading">
-
-            <span class="eyebrow">
-                Join the conversation
-            </span>
-
-            <h2>
-                Comments
-                <span>
-                    ({{ comment_count }})
-                </span>
-            </h2>
-
-            <p class="comments-intro">
-                Share your thoughts and join the conversation.
+            <p>
+                No comments yet.
+                Be the first to join the conversation.
             </p>
 
         </div>
-        <h3 class="comment-form-title">
-            Post a Comment
-        </h3>
-        <form
-            method="post"
-            action="{% url 'add_comment' article.slug %}"
-            class="comment-form"
-        >
 
-            {% csrf_token %}
+    {% endif %}
 
-            <div class="comment-form-row">
-
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Your name"
-                    maxlength="100"
-                    required
-                >
-
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email (optional)"
-                >
-
-            </div>
+</section>
 
 
-            <textarea
-                name="content"
-                rows="6"
-                maxlength="5000"
-                placeholder="Write your comment..."
-                required
-            ></textarea>
+<!-- BACK TO HOME -->
 
+<div class="article-back">
 
-            <button
-                type="submit"
-                class="comment-submit"
-            >
-                Post Comment
-            </button>
-
-        </form>
-
-
-        {% if comments %}
-
-            <div class="comments-list">
-
-                {% for comment in comments %}
-
-                    <article class="comment">
-
-                        <div class="comment-header">
-
-                            <strong>
-                                {{ comment.name }}
-                            </strong>
-
-                            <time>
-                                {{ comment.created_at|date:"M j, Y" }}
-                            </time>
-
-                        </div>
-
-
-                        <p>
-                            {{ comment.content|linebreaksbr }}
-                        </p>
-
-                    </article>
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="comments-empty">
-
-                <p>
-                    No comments yet.
-                    Be the first to join the conversation.
-                </p>
-
-            </div>
-
-        {% endif %}
-
-    </section>
-
-
-    <div class="article-back">
-
-        <a href="{% url 'home' %}">
-            ← Back to NewsPulseHQ
-        </a>
-
-    </div>
+    <a href="{% url 'home' %}">
+        ← Back to NewsPulseHQ
+    </a>
 
 </div>
+```
 
+</div>
 
 <script>
 
@@ -387,9 +439,7 @@ function shareArticle() {
     };
 
 
-    if (
-        navigator.share
-    ) {
+    if (navigator.share) {
 
         navigator.share(
             shareData
@@ -397,9 +447,7 @@ function shareArticle() {
             () => {}
         );
 
-    } else if (
-        navigator.clipboard
-    ) {
+    } else if (navigator.clipboard) {
 
         navigator.clipboard
             .writeText(

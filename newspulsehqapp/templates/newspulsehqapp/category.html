@@ -38,6 +38,8 @@ Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
 
                 <article class="article-card">
 
+                    <!-- ARTICLE IMAGE -->
+
                     {% if article.featured_image %}
 
                         <a
@@ -47,6 +49,20 @@ Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
                             <img
                                 src="{{ article.featured_image.url }}"
                                 alt="{{ article.title }}"
+                                loading="lazy"
+                            >
+                        </a>
+
+                    {% elif article.image_url %}
+
+                        <a
+                            href="{{ article.get_absolute_url }}"
+                            class="card-image"
+                        >
+                            <img
+                                src="{{ article.image_url }}"
+                                alt="{{ article.title }}"
+                                loading="lazy"
                             >
                         </a>
 
@@ -64,6 +80,8 @@ Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
                     {% endif %}
 
 
+                    <!-- ARTICLE CONTENT -->
+
                     <div class="card-content">
 
                         <span class="card-category">
@@ -77,23 +95,37 @@ Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
                         </h3>
 
                         {% if article.excerpt %}
+
                             <p>
                                 {{ article.excerpt }}
                             </p>
+
                         {% endif %}
+
 
                         <div class="card-meta">
 
-                            {% if article.author %}
+                            {% if article.source_name %}
+
+                                <span>
+                                    {{ article.source_name }}
+                                </span>
+
+                            {% elif article.author %}
+
                                 <span>
                                     {{ article.author }}
                                 </span>
+
                             {% endif %}
 
+
                             {% if article.published_at %}
+
                                 <span>
                                     {{ article.published_at|date:"M j, Y" }}
                                 </span>
+
                             {% endif %}
 
                         </div>

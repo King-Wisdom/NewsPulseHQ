@@ -1,205 +1,54 @@
-import requests
-
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils.dateparse import parse_datetime
 from django.utils.text import slugify
 
 from newspulsehqapp.models import Article, Category
+from newspulsehqapp.news_api import fetch_news
 
 
 class Command(BaseCommand):
-    help = (
-        "Import Nigerian, world, politics, culture, business, "
-        "technology, crypto and trading news."
-    )
-
-    API_URL = "https://newsapi.org/v2"
+    help = "Import news from GNews."
 
     FEEDS = [
-        {
-            "name": "Nigeria",
-            "category": "Nigeria",
-            "endpoint": "top-headlines",
-            "params": {
-                "country": "ng",
-                "category": "general",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "Politics",
-            "category": "Politics",
-            "endpoint": "everything",
-            "params": {
-                "q": (
-                    "politics OR government OR election "
-                    "OR parliament OR president"
-                ),
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "World",
-            "category": "World",
-            "endpoint": "everything",
-            "params": {
-                "q": "world OR international OR global",
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "Culture",
-            "category": "Culture",
-            "endpoint": "everything",
-            "params": {
-                "q": (
-                    "culture OR entertainment OR music "
-                    "OR film OR art OR lifestyle"
-                ),
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "Business",
-            "category": "Business",
-            "endpoint": "everything",
-            "params": {
-                "q": (
-                    "business OR economy OR markets "
-                    "OR companies OR finance"
-                ),
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "Technology",
-            "category": "Technology",
-            "endpoint": "everything",
-            "params": {
-                "q": (
-                    "technology OR artificial intelligence "
-                    "OR AI OR startups OR software"
-                ),
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "Crypto",
-            "category": "Crypto",
-            "endpoint": "everything",
-            "params": {
-                "q": (
-                    "crypto OR cryptocurrency OR bitcoin "
-                    "OR ethereum OR blockchain"
-                ),
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
-        {
-            "name": "Trading",
-            "category": "Trading",
-            "endpoint": "everything",
-            "params": {
-                "q": (
-                    "forex OR trading OR stocks "
-                    "OR commodities OR investing"
-                ),
-                "language": "en",
-                "sortBy": "publishedAt",
-                "pageSize": 20,
-            },
-        },
+        ("Nigeria", None, None, "ng"),
+        ("Politics", "politics government election president", None, None),
+        ("World", "world international global", None, None),
+        ("Culture", "culture entertainment music film art lifestyle", None, None),
+        ("Business", "business economy markets companies finance", None, None),
+        ("Technology", "technology artificial intelligence AI startups software", None, None),
+        ("Crypto", "crypto cryptocurrency bitcoin ethereum blockchain", None, None),
+        ("Trading", "forex trading stocks commodities investing", None, None),
     ]
 
     def handle(self, *args, **options):
-
-        api_key = getattr(settings, "NEWS_API_KEY", None)
-
-        if not api_key:
-            self.stdout.write(
-                self.style.ERROR(
-                    "NEWS_API_KEY is missing from settings.py"
-                )
-            )
-            return
-
         total_created = 0
         total_updated = 0
 
-        headers = {
-            "X-Api-Key": api_key,
-        }
-
-        for feed in self.FEEDS:
-
-            self.stdout.write(
-                f"Fetching {feed['name']}..."
-            )
-
-            params = feed["params"].copy()
+        for category_name, query, category, country in self.FEEDS:
+            self.stdout.write(f"Fetching {category_name}...")
 
             try:
-                response = requests.get(
-                    f"{self.API_URL}/{feed['endpoint']}",
-                    params=params,
-                    headers=headers,
-                    timeout=20,
+                articles = fetch_news(
+                    query=query,
+                    category=category,
+                    country=country,
+                    max_articles=20,
                 )
-
-                response.raise_for_status()
-
-                data = response.json()
-
-            except requests.RequestException as error:
+            except Exception as error:
                 self.stdout.write(
                     self.style.ERROR(
-                        f"Request failed for "
-                        f"{feed['name']}: {error}"
+                        f"Failed to fetch {category_name}: {error}"
                     )
                 )
                 continue
 
-            if data.get("status") != "ok":
-                self.stdout.write(
-                    self.style.ERROR(
-                        f"News API error for "
-                        f"{feed['name']}: "
-                        f"{data.get('message', 'Unknown error')}"
-                    )
-                )
-                continue
-
-            articles = data.get("articles", [])
-
-            category, _ = Category.objects.get_or_create(
-                name=feed["category"],
-                defaults={
-                    "slug": slugify(feed["category"])
-                },
+            category_obj, _ = Category.objects.get_or_create(
+                name=category_name,
+                defaults={"slug": slugify(category_name)},
             )
 
             for item in articles:
-
-                title = (
-                    item.get("title") or ""
-                ).strip()
-
-                source_url = (
-                    item.get("url") or ""
-                ).strip()
+                title = (item.get("title") or "").strip()
+                source_url = (item.get("url") or "").strip()
 
                 if not title or not source_url:
                     continue
@@ -210,11 +59,9 @@ class Command(BaseCommand):
                     source.get("name") or ""
                 ).strip()
 
-                image_url = item.get("urlToImage") or ""
-                self.stdout.write(
-                    f"IMAGE DEBUG: {image_url}"
-                )
-                image_url = image_url.strip()
+                image_url = (
+                    item.get("image") or ""
+                ).strip()
 
                 description = (
                     item.get("description") or ""
@@ -225,40 +72,31 @@ class Command(BaseCommand):
                 ).strip()
 
                 author = (
-                    item.get("author") or ""
-                ).strip()
-
-                published_at = parse_datetime(
-                    item.get("publishedAt") or ""
+                    item.get("authors") or ""
                 )
+
+                if isinstance(author, list):
+                    author = ", ".join(author)
+
+                author = str(author).strip()
+
+                published_at = item.get("publishedAt")
 
                 existing = Article.objects.filter(
                     source_url=source_url
                 ).first()
 
                 if existing:
-
                     existing.source_name = source_name
                     existing.image_url = image_url
                     existing.author = author
                     existing.excerpt = description
+                    existing.category = category_obj
 
                     if published_at:
                         existing.published_at = published_at
 
-                    existing.category = category
-
-                    existing.save(
-                        update_fields=[
-                            "source_name",
-                            "image_url",
-                            "author",
-                            "excerpt",
-                            "published_at",
-                            "category",
-                            "updated_at",
-                        ]
-                    )
+                    existing.save()
 
                     total_updated += 1
                     continue
@@ -274,11 +112,7 @@ class Command(BaseCommand):
                 while Article.objects.filter(
                     slug=article_slug
                 ).exists():
-
-                    article_slug = (
-                        f"{base_slug}-{counter}"
-                    )
-
+                    article_slug = f"{base_slug}-{counter}"
                     counter += 1
 
                 if not content:
@@ -286,7 +120,7 @@ class Command(BaseCommand):
 
                 if not content:
                     content = (
-                        "Read the full story from "
+                        f"Read the full story from "
                         f"{source_name or 'the original publisher'}."
                     )
 
@@ -299,7 +133,7 @@ class Command(BaseCommand):
                     excerpt=description,
                     content=content,
                     author=author,
-                    category=category,
+                    category=category_obj,
                     published_at=published_at,
                     is_published=True,
                     is_featured=False,
@@ -307,11 +141,14 @@ class Command(BaseCommand):
 
                 total_created += 1
 
+                self.stdout.write(
+                    f"  Image: {image_url or 'NO IMAGE'}"
+                )
+
         self.stdout.write("")
         self.stdout.write(
             self.style.SUCCESS(
-                "News import complete. "
-                f"{total_created} new articles created, "
-                f"{total_updated} existing articles updated."
+                f"Import complete: {total_created} created, "
+                f"{total_updated} updated."
             )
         )
