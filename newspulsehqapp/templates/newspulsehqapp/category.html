@@ -1,4 +1,5 @@
 {% extends "newspulsehqapp/base.html" %}
+{% load engagement_filters %}
 
 {% block title %}
 {{ category.name }} News | NewsPulseHQ
@@ -28,6 +29,11 @@ Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
         </p>
 
     </header>
+
+
+    {% include "newspulsehqapp/_sponsored_ad.html" with ad=sponsored_ad %}
+
+    {% include "newspulsehqapp/_adsense_unit.html" with slot=adsense_slot_category %}
 
 
     {% if articles %}
@@ -127,6 +133,13 @@ Latest {{ category.name }} news, stories and perspectives from NewsPulseHQ.
                                 </span>
 
                             {% endif %}
+
+                            <span
+                                class="engagement-badge"
+                                title="{{ article.like_count }} likes"
+                            >
+                                ❤️ {{ article.like_count|format_count }}
+                            </span>
 
                         </div>
 
