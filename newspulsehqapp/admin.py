@@ -1,12 +1,14 @@
 from django.contrib import admin
 
-from .models import Article, ArticleLike, Category, Comment
+from .models import Article, ArticleLike, Category, Comment, SponsoredAd
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug")
+    list_display = ("name", "slug", "order")
+    list_editable = ("order",)
     search_fields = ("name",)
+    ordering = ("order", "name")
     prepopulated_fields = {
         "slug": ("name",),
     }
@@ -82,5 +84,41 @@ class ArticleLikeAdmin(admin.ModelAdmin):
     )
 
     ordering = (
+        "-created_at",
+    )
+
+
+@admin.register(SponsoredAd)
+class SponsoredAdAdmin(admin.ModelAdmin):
+    list_display = (
+        "advertiser_name",
+        "headline",
+        "placement",
+        "is_active",
+        "priority",
+        "impression_count",
+        "click_count",
+        "starts_at",
+        "ends_at",
+    )
+
+    list_filter = (
+        "placement",
+        "is_active",
+    )
+
+    search_fields = (
+        "advertiser_name",
+        "headline",
+        "body",
+    )
+
+    readonly_fields = (
+        "impression_count",
+        "click_count",
+    )
+
+    ordering = (
+        "-priority",
         "-created_at",
     )

@@ -1,0 +1,44 @@
+{% if ad %}
+
+<div class="sponsored-ad">
+
+    <span class="sponsored-label">Sponsored</span>
+
+    <a
+        href="{% url 'sponsored_ad_click' ad.pk %}"
+        class="sponsored-ad-link"
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+    >
+
+        {% if ad.image %}
+
+            <div class="sponsored-ad-image">
+                <img
+                    src="{{ ad.image.url }}"
+                    alt="{{ ad.headline }}"
+                    loading="lazy"
+                >
+            </div>
+
+        {% endif %}
+
+        <div class="sponsored-ad-body">
+
+            <strong>{{ ad.headline }}</strong>
+
+            {% if ad.body %}
+                <p>{{ ad.body }}</p>
+            {% endif %}
+
+            <span class="sponsored-ad-advertiser">
+                {{ ad.advertiser_name }}
+            </span>
+
+        </div>
+
+    </a>
+
+</div>
+
+{% endif %}

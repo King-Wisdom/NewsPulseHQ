@@ -3,6 +3,7 @@ from django.utils.text import slugify
 
 from newspulsehqapp.models import Article, Category
 from newspulsehqapp.news_api import fetch_news
+from newspulsehqapp.utils import seed_like_count
 
 
 class Command(BaseCommand):
@@ -23,7 +24,9 @@ class Command(BaseCommand):
         total_created = 0
         total_updated = 0
 
-        for category_name, query, category, country in self.FEEDS:
+        for position, (category_name, query, category, country) in enumerate(
+            self.FEEDS
+        ):
             self.stdout.write(f"Fetching {category_name}...")
 
             try:
@@ -43,7 +46,10 @@ class Command(BaseCommand):
 
             category_obj, _ = Category.objects.get_or_create(
                 name=category_name,
-                defaults={"slug": slugify(category_name)},
+                defaults={
+                    "slug": slugify(category_name),
+                    "order": position,
+                },
             )
 
             for item in articles:
@@ -137,6 +143,7 @@ class Command(BaseCommand):
                     published_at=published_at,
                     is_published=True,
                     is_featured=False,
+                    base_likes=seed_like_count(is_featured=False),
                 )
 
                 total_created += 1

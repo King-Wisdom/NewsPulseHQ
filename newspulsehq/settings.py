@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+9_m2m_npqxfs@hywwywv702ukaf+qplf0o%2&ha6b!9b+2zd='
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-+9_m2m_npqxfs@hywwywv702ukaf+qplf0o%2&ha6b!9b+2zd=",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -65,6 +73,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.csrf",
                 "newspulsehqapp.context_processors.site_categories",
+                "newspulsehqapp.context_processors.adsense_settings",
             ],
         },
     },
@@ -137,6 +146,26 @@ MAILERS = {
     },
 }
 
-NEWS_API_KEY = "66d4890d489943edb0c6e8239326e12a"
-GNEWS_API_KEY = "ae5f387e6df1851248e32ea2a1f1dc51"
+NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "66d4890d489943edb0c6e8239326e12a")
+GNEWS_API_KEY = os.environ.get("GNEWS_API_KEY", "ae5f387e6df1851248e32ea2a1f1dc51")
+
+
+# Automated hourly news refresh (see newspulsehqapp/scheduler.py).
+# Set ENABLE_NEWS_SCHEDULER=false in the environment to disable, e.g.
+# when running one-off scripts or in an environment with its own cron.
+ENABLE_NEWS_SCHEDULER = os.environ.get(
+    "ENABLE_NEWS_SCHEDULER", "true"
+).lower() == "true"
+
+
+# Monetisation
+# -------------------------------------------------------------------
+# Google AdSense. Set these in the environment once you have a
+# publisher account; the site renders no ad markup until ADSENSE_CLIENT_ID
+# is configured, so leaving them unset is safe.
+ADSENSE_CLIENT_ID = os.environ.get("ADSENSE_CLIENT_ID", "")
+
+ADSENSE_SLOT_HOME = os.environ.get("ADSENSE_SLOT_HOME", "")
+ADSENSE_SLOT_ARTICLE = os.environ.get("ADSENSE_SLOT_ARTICLE", "")
+ADSENSE_SLOT_CATEGORY = os.environ.get("ADSENSE_SLOT_CATEGORY", "")
 

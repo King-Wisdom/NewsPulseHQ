@@ -33,4 +33,10 @@ urlpatterns = [
         views.category_articles,
         name="category_articles",
     ),
+
+    path(
+        "sponsored/<int:pk>/click/",
+        views.sponsored_ad_click,
+        name="sponsored_ad_click",
+    ),
 ]

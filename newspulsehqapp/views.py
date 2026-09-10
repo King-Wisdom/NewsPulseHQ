@@ -1,8 +1,11 @@
 from django.contrib import messages
+from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Article, ArticleLike, Category, Comment
+from .ads import get_active_ad
+from .models import Article, ArticleLike, Category, Comment, SponsoredAd
+from .utils import format_count
 
 
 def home(request):
@@ -38,6 +41,7 @@ def home(request):
         "featured_article": featured_article,
         "latest_articles": latest_articles,
         "categories": categories,
+        "sponsored_ad": get_active_ad(SponsoredAd.PLACEMENT_HOME_FEED),
     }
 
     return render(
@@ -71,9 +75,10 @@ def article_detail(request, slug):
     context = {
         "article": article,
         "comments": comments,
-        "like_count": article.likes.count(),
+        "like_count": article.like_count,
         "comment_count": comments.count(),
         "user_has_liked": user_has_liked,
+        "sponsored_ad": get_active_ad(SponsoredAd.PLACEMENT_ARTICLE_INLINE),
     }
 
     return render(
@@ -115,10 +120,13 @@ def like_article(request, slug):
         like.delete()
         liked = False
 
+    like_count = article.like_count
+
     return JsonResponse(
         {
             "liked": liked,
-            "like_count": article.likes.count(),
+            "like_count": like_count,
+            "like_count_display": format_count(like_count),
         }
     )
 
@@ -195,6 +203,7 @@ def category_articles(request, slug):
     context = {
         "category": category,
         "articles": articles,
+        "sponsored_ad": get_active_ad(SponsoredAd.PLACEMENT_CATEGORY_TOP),
     }
 
     return render(
@@ -202,3 +211,11 @@ def category_articles(request, slug):
         "newspulsehqapp/category.html",
         context,
     )
+
+
+def sponsored_ad_click(request, pk):
+    ad = get_object_or_404(SponsoredAd, pk=pk, is_active=True)
+
+    SponsoredAd.objects.filter(pk=pk).update(click_count=F("click_count") + 1)
+
+    return redirect(ad.destination_url)

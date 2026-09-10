@@ -1,4 +1,5 @@
 {% extends "newspulsehqapp/base.html" %}
+{% load engagement_filters %}
 
 {% block title %}
 {{ article.title }} | NewsPulseHQ
@@ -12,7 +13,6 @@
 
 <div class="article-detail">
 
-```
 <header class="article-detail-header">
 
     {% if article.category %}
@@ -86,6 +86,17 @@
 </div>
 
 
+<!-- SPONSORED CONTENT -->
+
+<div class="article-ad-slot">
+
+    {% include "newspulsehqapp/_sponsored_ad.html" with ad=sponsored_ad %}
+
+    {% include "newspulsehqapp/_adsense_unit.html" with slot=adsense_slot_article %}
+
+</div>
+
+
 <!-- ARTICLE ACTIONS -->
 
 <div class="article-actions">
@@ -117,8 +128,8 @@
 
         </span>
 
-        <span id="like-count">
-            {{ like_count }}
+        <span id="like-count" title="{{ like_count }} likes">
+            {{ like_count|format_count }}
         </span>
 
     </button>
@@ -311,167 +322,7 @@
     </a>
 
 </div>
-```
 
 </div>
-
-<script>
-
-const likeButton = document.getElementById("like-button");
-
-if (likeButton) {
-
-    likeButton.addEventListener("click", async function () {
-
-        const url = this.dataset.url;
-
-        this.disabled = true;
-
-        try {
-
-            const response = await fetch(
-                url,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "X-CSRFToken": getCookie("csrftoken"),
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Like request failed.");
-            }
-
-            const data = await response.json();
-
-            const icon =
-                document.getElementById("like-icon");
-
-            const text =
-                document.getElementById("like-text");
-
-            const count =
-                document.getElementById("like-count");
-
-
-            if (data.liked) {
-
-                this.classList.add("liked");
-
-                icon.textContent = "❤️";
-                text.textContent = "Liked";
-
-            } else {
-
-                this.classList.remove("liked");
-
-                icon.textContent = "🤍";
-                text.textContent = "Like";
-
-            }
-
-            count.textContent = data.like_count;
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "We couldn't update your like. Please try again."
-            );
-
-        } finally {
-
-            this.disabled = false;
-
-        }
-
-    });
-
-}
-
-
-function getCookie(name) {
-
-    let cookieValue = null;
-
-    if (document.cookie && document.cookie !== "") {
-
-        const cookies =
-            document.cookie.split(";");
-
-        for (let cookie of cookies) {
-
-            cookie = cookie.trim();
-
-            if (
-                cookie.substring(
-                    0,
-                    name.length + 1
-                ) === name + "="
-            ) {
-
-                cookieValue =
-                    decodeURIComponent(
-                        cookie.substring(
-                            name.length + 1
-                        )
-                    );
-
-                break;
-            }
-        }
-    }
-
-    return cookieValue;
-}
-
-
-function shareArticle() {
-
-    const shareData = {
-        title: "{{ article.title|escapejs }}",
-        text: "{{ article.excerpt|default:article.title|escapejs }}",
-        url: window.location.href
-    };
-
-
-    if (navigator.share) {
-
-        navigator.share(
-            shareData
-        ).catch(
-            () => {}
-        );
-
-    } else if (navigator.clipboard) {
-
-        navigator.clipboard
-            .writeText(
-                window.location.href
-            )
-            .then(
-                () => {
-                    alert(
-                        "Article link copied!"
-                    );
-                }
-            );
-
-    } else {
-
-        prompt(
-            "Copy this article link:",
-            window.location.href
-        );
-
-    }
-
-}
-
-</script>
 
 {% endblock %}

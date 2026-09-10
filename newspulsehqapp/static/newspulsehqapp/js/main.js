@@ -52,8 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("like-text").textContent =
                     data.liked ? "Liked" : "Like";
 
-                document.getElementById("like-count").textContent =
-                    data.like_count;
+                const countEl = document.getElementById("like-count");
+
+                countEl.textContent =
+                    data.like_count_display !== undefined
+                        ? data.like_count_display
+                        : data.like_count;
+
+                countEl.title = data.like_count + " likes";
 
                 likeButton.classList.toggle(
                     "liked",
