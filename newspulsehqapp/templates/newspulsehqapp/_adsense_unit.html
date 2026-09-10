@@ -1,0 +1,22 @@
+{% if adsense_client_id and slot %}
+
+<div class="adsense-unit">
+
+    <span class="sponsored-label">Advertisement</span>
+
+    <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="{{ adsense_client_id }}"
+        data-ad-slot="{{ slot }}"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+    ></ins>
+
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+</div>
+
+{% endif %}

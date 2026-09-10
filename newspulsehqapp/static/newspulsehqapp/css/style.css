@@ -278,6 +278,15 @@ img {
 }
 
 
+.engagement-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    font-size: 0.7rem;
+}
+
+
 .read-more {
     display: inline-block;
 
@@ -417,6 +426,12 @@ img {
 }
 
 
+.card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+
 .card-placeholder {
     display: flex;
     align-items: center;
@@ -473,6 +488,48 @@ img {
     font-size: 0.95rem;
 
     line-height: 1.7;
+}
+
+
+/* CATEGORY LINKS */
+
+.category-links {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    margin-bottom: 100px;
+}
+
+.category-link {
+    padding: 12px 22px;
+
+    border: 1px solid var(--border);
+
+    background: var(--white);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        color 180ms ease;
+}
+
+.category-link:hover {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--gold-light);
 }
 
 
@@ -909,247 +966,7 @@ img {
 }
 
 
-/* ========================================
-   COMMENTS
-======================================== */
-
-.comments-section {
-    max-width: 720px;
-    margin: 80px auto 0;
-}
-
-.comments-heading {
-    margin-bottom: 40px;
-}
-
-.comments-heading h2 {
-    margin: 8px 0 0;
-
-    font-size: clamp(2rem, 4vw, 3.2rem);
-
-    line-height: 1;
-
-    letter-spacing: -0.045em;
-}
-
-
-/* COMMENT FORM */
-
-.comment-form-wrapper {
-    margin-bottom: 55px;
-
-    padding: 35px;
-
-    background: var(--white);
-
-    border: 1px solid var(--border);
-}
-
-.comment-form-wrapper h3 {
-    margin: 0 0 25px;
-
-    font-size: 1.5rem;
-
-    letter-spacing: -0.025em;
-}
-
-.comment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.comment-form-row {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 18px;
-}
-
-.form-field {
-    display: flex;
-    flex-direction: column;
-
-    gap: 8px;
-}
-
-.form-field label {
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 0.68rem;
-    font-weight: 800;
-
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-
-    color: var(--muted);
-}
-
-.form-field input,
-.form-field textarea {
-    width: 100%;
-
-    padding: 13px 14px;
-
-    border: 1px solid var(--border);
-
-    background: var(--ivory);
-    color: var(--ink);
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-    font-size: 1rem;
-
-    outline: none;
-
-    transition:
-        border-color 180ms ease,
-        background 180ms ease;
-}
-
-.form-field textarea {
-    min-height: 140px;
-
-    resize: vertical;
-}
-
-.form-field input:focus,
-.form-field textarea:focus {
-    border-color: var(--gold);
-
-    background: var(--white);
-}
-
-.comment-submit {
-    align-self: flex-start;
-
-    padding: 13px 20px;
-
-    border: 0;
-
-    background: var(--navy);
-    color: var(--gold-light);
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 0.7rem;
-    font-weight: 700;
-
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-
-    cursor: pointer;
-
-    transition:
-        background 180ms ease;
-}
-
-.comment-submit:hover {
-    background: var(--navy-light);
-}
-
-
-/* COMMENT MESSAGES */
-
-.comment-messages {
-    margin-bottom: 20px;
-}
-
-.comment-messages p {
-    margin: 0;
-
-    padding: 12px 15px;
-
-    background: var(--ivory);
-
-    border-left: 3px solid var(--gold);
-
-    font-size: 0.9rem;
-}
-
-
-/* COMMENT LIST */
-
-.comments-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.comment {
-    padding: 25px 0;
-
-    border-top: 1px solid var(--border);
-}
-
-.comment-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-
-    margin-bottom: 12px;
-}
-
-.comment-header strong {
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 0.75rem;
-
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.comment-header time {
-    color: var(--muted);
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size: 0.65rem;
-
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.comment p {
-    margin: 0;
-
-    color: var(--muted);
-
-    font-size: 1rem;
-
-    line-height: 1.75;
-}
-
-.comments-empty {
-    padding: 30px 0;
-
-    border-top: 1px solid var(--border);
-
-    color: var(--muted);
-
-    font-size: 0.95rem;
-}
-
-
-/* MOBILE */
+/* MOBILE ENGAGEMENT */
 
 @media (max-width: 640px) {
 
@@ -1161,22 +978,6 @@ img {
         padding: 10px 12px;
 
         font-size: 0.62rem;
-    }
-
-    .comment-form-wrapper {
-        padding: 25px 20px;
-    }
-
-    .comment-form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .comment-header {
-        align-items: flex-start;
-
-        flex-direction: column;
-
-        gap: 5px;
     }
 
 }
@@ -1314,19 +1115,19 @@ img {
 /* COMMENT FORM */
 
 .comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
     margin-bottom: 55px;
 }
 
 .comment-form-row {
     display: grid;
 
-    grid-template-columns:
-        1fr
-        1fr;
+    grid-template-columns: 1fr 1fr;
 
     gap: 15px;
-
-    margin-bottom: 15px;
 }
 
 .comment-form input,
@@ -1355,8 +1156,6 @@ img {
     resize: vertical;
 
     min-height: 150px;
-
-    margin-bottom: 15px;
 }
 
 .comment-form input:focus,
@@ -1365,6 +1164,8 @@ img {
 }
 
 .comment-submit {
+    align-self: flex-start;
+
     border: 0;
 
     padding: 14px 22px;
@@ -1403,6 +1204,9 @@ img {
 /* COMMENT LIST */
 
 .comments-list {
+    display: flex;
+    flex-direction: column;
+
     border-top: 1px solid var(--border);
 }
 
@@ -1453,6 +1257,8 @@ img {
 
 .comments-empty {
     padding: 30px;
+
+    border-top: 1px solid var(--border);
 
     background: var(--white);
 
@@ -1560,21 +1366,145 @@ color: white;
 
 @media (max-width: 600px) {
 
-```
-.social-float {
-    right: 14px;
-    bottom: 16px;
-    gap: 9px;
-}
+    .social-float {
+        right: 14px;
+        bottom: 16px;
+        gap: 9px;
+    }
 
-.social-float-button {
-    width: 46px;
-    height: 46px;
-    font-size: 20px;
-}
-```
+    .social-float-button {
+        width: 46px;
+        height: 46px;
+        font-size: 20px;
+    }
 
 }
+
+/* ========================================
+   SPONSORED / ADSENSE
+   ======================================== */
+
+.sponsored-label {
+    display: inline-block;
+
+    margin-bottom: 12px;
+
+    color: var(--muted);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.62rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+}
+
+.sponsored-ad {
+    margin-bottom: 55px;
+
+    padding: 22px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+}
+
+.sponsored-ad-link {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 20px;
+}
+
+.sponsored-ad-image {
+    flex: 0 0 180px;
+
+    aspect-ratio: 16 / 10;
+
+    overflow: hidden;
+
+    background: var(--navy);
+}
+
+.sponsored-ad-body {
+    flex: 1 1 240px;
+
+    min-width: 0;
+}
+
+.sponsored-ad-body strong {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 1.2rem;
+
+    letter-spacing: -0.02em;
+}
+
+.sponsored-ad-body p {
+    margin: 0 0 10px;
+
+    color: var(--muted);
+
+    font-size: 0.95rem;
+
+    line-height: 1.6;
+}
+
+.sponsored-ad-advertiser {
+    color: var(--gold);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 0.68rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.adsense-unit {
+    margin-bottom: 55px;
+
+    overflow: hidden;
+}
+
+.article-ad-slot {
+    max-width: 720px;
+
+    margin: 0 auto 40px;
+}
+
+.article-ad-slot .sponsored-ad,
+.article-ad-slot .adsense-unit {
+    margin-bottom: 0;
+}
+
+.article-ad-slot .sponsored-ad + .adsense-unit {
+    margin-top: 30px;
+}
+
+
+@media (max-width: 640px) {
+
+    .sponsored-ad {
+        padding: 18px;
+    }
+
+    .sponsored-ad-image {
+        flex-basis: 100%;
+    }
+
+}
+
 
 /* =========================================
 COMMENT DISCLAIMER

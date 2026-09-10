@@ -1,5 +1,6 @@
 {% extends "newspulsehqapp/base.html" %}
 {% load static %}
+{% load engagement_filters %}
 
 {% block title %}
 NewsPulseHQ | Global News & Perspectives
@@ -14,88 +15,103 @@ technology, culture, crypto, trading and stories that matter.
 
 {% if featured_article %}
 
-<div class="hero-copy">
+<div class="hero">
 
-    <span class="eyebrow">
-        {{ featured_article.category.name|default:"Featured" }}
-    </span>
+    <div class="hero-content">
 
-    <h1>
-        <a href="{% url 'article_detail' featured_article.slug %}">
-            {{ featured_article.title }}
+        <div class="hero-copy">
+
+            <span class="eyebrow">
+                {{ featured_article.category.name|default:"Featured" }}
+            </span>
+
+            <h1>
+                <a href="{% url 'article_detail' featured_article.slug %}">
+                    {{ featured_article.title }}
+                </a>
+            </h1>
+
+            {% if featured_article.excerpt %}
+                <p class="hero-excerpt">
+                    {{ featured_article.excerpt }}
+                </p>
+            {% endif %}
+
+            <div class="article-meta">
+
+                {% if featured_article.source_name %}
+                    <span>
+                        {{ featured_article.source_name }}
+                    </span>
+                {% elif featured_article.author %}
+                    <span>
+                        By {{ featured_article.author }}
+                    </span>
+                {% endif %}
+
+                {% if featured_article.published_at %}
+                    <span>
+                        {{ featured_article.published_at|date:"F j, Y" }}
+                    </span>
+                {% endif %}
+
+                <span
+                    class="engagement-badge"
+                    title="{{ featured_article.like_count }} likes"
+                >
+                    ❤️ {{ featured_article.like_count|format_count }}
+                </span>
+
+            </div>
+
+            <a
+                href="{% url 'article_detail' featured_article.slug %}"
+                class="read-more"
+            >
+                Read Full Story →
+            </a>
+
+        </div>
+
+
+        <!-- FEATURED IMAGE -->
+
+        <a
+            href="{% url 'article_detail' featured_article.slug %}"
+            class="hero-image"
+        >
+
+            {% if featured_article.featured_image %}
+
+                <!-- MANUALLY UPLOADED IMAGE -->
+                <img
+                    src="{{ featured_article.featured_image.url }}"
+                    alt="{{ featured_article.title }}"
+                >
+
+            {% elif featured_article.image_url %}
+
+                <!-- NEWS API IMAGE -->
+                <img
+                    src="{{ featured_article.image_url }}"
+                    alt="{{ featured_article.title }}"
+                >
+
+            {% else %}
+
+                <!-- FALLBACK -->
+                <img
+                    src="{% static 'newspulsehqapp/images/fallback-news.jpg' %}"
+                    alt="NewsPulseHQ"
+                >
+
+            {% endif %}
+
         </a>
-    </h1>
-
-    {% if featured_article.excerpt %}
-        <p class="hero-excerpt">
-            {{ featured_article.excerpt }}
-        </p>
-    {% endif %}
-
-    <div class="article-meta">
-
-        {% if featured_article.source_name %}
-            <span>
-                {{ featured_article.source_name }}
-            </span>
-        {% elif featured_article.author %}
-            <span>
-                By {{ featured_article.author }}
-            </span>
-        {% endif %}
-
-        {% if featured_article.published_at %}
-            <span>
-                {{ featured_article.published_at|date:"F j, Y" }}
-            </span>
-        {% endif %}
 
     </div>
 
-    <a
-        href="{% url 'article_detail' featured_article.slug %}"
-        class="read-more"
-    >
-        Read Full Story →
-    </a>
-
 </div>
-
-
-<!-- FEATURED IMAGE -->
-
-<a
-    href="{% url 'article_detail' featured_article.slug %}"
-    class="hero-image"
->
-
-    {% if featured_article.featured_image %}
-
-        <!-- MANUALLY UPLOADED IMAGE -->
-        <img
-            src="{{ featured_article.featured_image.url }}"
-            alt="{{ featured_article.title }}"
-        >
-
-    {% elif featured_article.image_url %}
-
-        <!-- NEWS API IMAGE -->
-        <img
-            src="{{ featured_article.image_url }}"
-            alt="{{ featured_article.title }}"
-        >
-
-    {% else %}
-
-        <!-- FALLBACK -->
-        <img
-            src="{% static 'newspulsehqapp/images/fallback-news.jpg' %}"
-            alt="NewsPulseHQ"
-        >
-
-    {% endif %}
-
-</a>
 
 
 {% else %}
@@ -118,6 +134,13 @@ technology, culture, crypto, trading and stories that matter.
 </div>
 
 {% endif %}
+
+
+<!-- SPONSORED CONTENT -->
+
+{% include "newspulsehqapp/_sponsored_ad.html" with ad=sponsored_ad %}
+
+{% include "newspulsehqapp/_adsense_unit.html" with slot=adsense_slot_home %}
 
 
 <!-- =========================
@@ -241,6 +264,13 @@ technology, culture, crypto, trading and stories that matter.
 
                 {% endif %}
 
+                <span
+                    class="engagement-badge"
+                    title="{{ article.like_count }} likes"
+                >
+                    ❤️ {{ article.like_count|format_count }}
+                </span>
+
             </div>
 
         </div>
@@ -313,22 +343,26 @@ technology, culture, crypto, trading and stories that matter.
      BRAND STATEMENT
 ========================= -->
 
-<div>
+<div class="editorial-banner">
 
-    <span class="eyebrow">
-        The NewsPulseHQ Standard
-    </span>
+    <div>
 
-    <h2>
-        News with context.<br>
-        Perspective with purpose.
-    </h2>
+        <span class="eyebrow">
+            The NewsPulseHQ Standard
+        </span>
+
+        <h2>
+            News with context.<br>
+            Perspective with purpose.
+        </h2>
+
+    </div>
+
+    <p>
+        We believe great journalism should inform,
+        challenge and inspire.
+    </p>
 
 </div>
-
-<p>
-    We believe great journalism should inform,
-    challenge and inspire.
-</p>
 
 {% endblock %}
